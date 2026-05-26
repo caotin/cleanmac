@@ -10,6 +10,8 @@ on:
 jobs:
   test:
     name: Build & Test
+    # Only run tests for branch pushes and pull requests, not when triggered by a tag push
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     runs-on: macos-14
     steps:
       - name: Checkout repository
@@ -21,11 +23,69 @@ jobs:
       - name: Run Tests
         run: swift test
 
-  release:
-    name: Create Release
+  release-auto:
+    name: Auto Tag & Release
     needs: test
+    # Only run on push to main branch (exclude PRs, exclude tag pushes)
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: macos-14
-    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history so tags are available
+
+      - name: Determine Next Tag and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch all tags
+          git fetch --tags
+          
+          # Get the latest tag matching v*
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n1)
+          
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_TAG="v1.0.0"
+          else
+            VERSION_STR="${LATEST_TAG#v}"
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_STR"
+            NEW_PATCH=$((PATCH + 1))
+            NEW_TAG="v$MAJOR.$MINOR.$NEW_PATCH"
+          fi
+          
+          echo "Latest tag: $LATEST_TAG"
+          echo "New tag: $NEW_TAG"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          
+          # Create and push the new tag
+          git tag -a "$NEW_TAG" -m "Release version ${NEW_TAG#v}"
+          git push origin "$NEW_TAG"
+
+      - name: Build DMG Package
+        run: |
+          TAG_VERSION="${NEW_TAG#v}"
+          chmod +x build_dmg.sh
+          VERSION="$TAG_VERSION" BUILD_NUMBER="$GITHUB_RUN_NUMBER" ./build_dmg.sh
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ env.NEW_TAG }}" build/CleanMac.dmg \
+            --title "CleanMac ${{ env.NEW_TAG }}" \
+            --generate-notes \
+            --draft=false \
+            --prerelease=false
+
+  release-manual:
+    name: Create Release (Manual Tag)
+    # Only run when triggered by tag push starting with v
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: macos-14
     permissions:
       contents: write
     steps:
