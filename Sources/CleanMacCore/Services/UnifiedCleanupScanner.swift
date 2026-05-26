@@ -45,7 +45,20 @@ private func cleanupTargets(homeDirectory: String) -> [CleanupTarget] {
         CleanupTarget(source: .pnpm, category: .devCaches, title: "pnpm Store", path: "\(homeDirectory)/Library/pnpm/store", risk: .medium, scanChildren: true),
         CleanupTarget(source: .homebrew, category: .devCaches, title: "Homebrew Cache", path: "\(homeDirectory)/Library/Caches/Homebrew", risk: .low, scanChildren: true),
         CleanupTarget(source: .userLogs, category: .safeSystem, title: "User Logs", path: "\(homeDirectory)/Library/Logs", risk: .low, scanChildren: true),
-        CleanupTarget(source: .userCaches, category: .safeSystem, title: "User App Caches", path: "\(homeDirectory)/Library/Caches", risk: .medium, scanChildren: true)
+        CleanupTarget(source: .userCaches, category: .safeSystem, title: "User App Caches", path: "\(homeDirectory)/Library/Caches", risk: .medium, scanChildren: true),
+        CleanupTarget(source: .pip, category: .devCaches, title: "pip Cache", path: "\(homeDirectory)/Library/Caches/pip", risk: .low, scanChildren: true),
+        CleanupTarget(source: .poetry, category: .devCaches, title: "Poetry Cache", path: "\(homeDirectory)/Library/Caches/pypoetry", risk: .low, scanChildren: true),
+        CleanupTarget(source: .pipenv, category: .devCaches, title: "Pipenv Cache", path: "\(homeDirectory)/Library/Caches/pipenv", risk: .low, scanChildren: true),
+        CleanupTarget(source: .cargo, category: .devCaches, title: "Cargo Registry", path: "\(homeDirectory)/.cargo/registry", risk: .low, scanChildren: true),
+        CleanupTarget(source: .cargo, category: .devCaches, title: "Cargo Git Cache", path: "\(homeDirectory)/.cargo/git", risk: .low, scanChildren: true),
+        CleanupTarget(source: .go, category: .devCaches, title: "Go Build Cache", path: "\(homeDirectory)/Library/Caches/go-build", risk: .low, scanChildren: true),
+        CleanupTarget(source: .go, category: .devCaches, title: "Go Mod Cache", path: "\(homeDirectory)/go/pkg/mod", risk: .medium, scanChildren: true),
+        CleanupTarget(source: .pub, category: .devCaches, title: "Pub Cache", path: "\(homeDirectory)/.pub-cache", risk: .low, scanChildren: true),
+        CleanupTarget(source: .gradle, category: .devCaches, title: "Gradle Cache", path: "\(homeDirectory)/.gradle/caches", risk: .low, scanChildren: true),
+        CleanupTarget(source: .maven, category: .devCaches, title: "Maven Repository", path: "\(homeDirectory)/.m2/repository", risk: .low, scanChildren: true),
+        CleanupTarget(source: .cocoapods, category: .devCaches, title: "CocoaPods Cache", path: "\(homeDirectory)/Library/Caches/CocoaPods", risk: .low, scanChildren: true),
+        CleanupTarget(source: .carthage, category: .devCaches, title: "Carthage Cache", path: "\(homeDirectory)/Library/Caches/carthage", risk: .low, scanChildren: true),
+        CleanupTarget(source: .composer, category: .devCaches, title: "Composer Cache", path: "\(homeDirectory)/Library/Caches/composer", risk: .low, scanChildren: true)
     ]
 }
 

@@ -115,6 +115,17 @@ public enum CleanupSource: String, CaseIterable, Codable, Equatable, Sendable {
     case homebrew
     case userLogs
     case userCaches
+    case pip
+    case poetry
+    case pipenv
+    case cargo
+    case go
+    case pub
+    case gradle
+    case maven
+    case cocoapods
+    case carthage
+    case composer
 
     public var title: String {
         switch self {
@@ -126,6 +137,17 @@ public enum CleanupSource: String, CaseIterable, Codable, Equatable, Sendable {
         case .homebrew: "Homebrew Cache"
         case .userLogs: "User Logs"
         case .userCaches: "User Caches"
+        case .pip: "pip Cache"
+        case .poetry: "Poetry Cache"
+        case .pipenv: "Pipenv Cache"
+        case .cargo: "Cargo Cache"
+        case .go: "Go Cache"
+        case .pub: "Pub Cache"
+        case .gradle: "Gradle Cache"
+        case .maven: "Maven Repository"
+        case .cocoapods: "CocoaPods Cache"
+        case .carthage: "Carthage Cache"
+        case .composer: "Composer Cache"
         }
     }
 }
@@ -248,7 +270,20 @@ public struct CleanupSettings: Equatable, Codable, Sendable {
             "\(homeDirectory)/Library/pnpm/store",
             "\(homeDirectory)/Library/Caches/Homebrew",
             "\(homeDirectory)/Library/Logs",
-            "\(homeDirectory)/Library/Caches"
+            "\(homeDirectory)/Library/Caches",
+            "\(homeDirectory)/Library/Caches/pip",
+            "\(homeDirectory)/Library/Caches/pypoetry",
+            "\(homeDirectory)/Library/Caches/pipenv",
+            "\(homeDirectory)/.cargo/registry",
+            "\(homeDirectory)/.cargo/git",
+            "\(homeDirectory)/Library/Caches/go-build",
+            "\(homeDirectory)/go/pkg/mod",
+            "\(homeDirectory)/.pub-cache",
+            "\(homeDirectory)/.gradle/caches",
+            "\(homeDirectory)/.m2/repository",
+            "\(homeDirectory)/Library/Caches/CocoaPods",
+            "\(homeDirectory)/Library/Caches/carthage",
+            "\(homeDirectory)/Library/Caches/composer"
         ]
     }
 
