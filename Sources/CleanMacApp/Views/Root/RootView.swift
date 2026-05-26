@@ -13,6 +13,7 @@ struct RootView: View {
                 content
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .ignoresSafeArea(edges: .top)
         }
         .frame(minWidth: 1080, minHeight: 700)
         .confirmationDialog(

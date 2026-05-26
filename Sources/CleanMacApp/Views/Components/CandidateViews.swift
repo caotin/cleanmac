@@ -27,7 +27,21 @@ struct CandidateReviewTable: View {
             reviewControls
 
             if filteredCandidates.isEmpty {
-                ContentUnavailableView("Nothing to show", systemImage: "magnifyingglass", description: Text("Run a scan or adjust the filters."))
+                VStack(spacing: 12) {
+                    Spacer()
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 28))
+                        .foregroundStyle(AppTheme.secondaryText.opacity(0.6))
+                    Text("Nothing to show")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AppTheme.text)
+                    Text("Run a scan or adjust the filters.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(AppTheme.secondaryText)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 180)
             } else {
                 VStack(spacing: 0) {
                     ScrollView {
@@ -133,7 +147,7 @@ struct CandidateReviewTable: View {
                 }
             }
             .menuStyle(.button)
-            .frame(width: 90)
+            .frame(width: 105)
 
             // Category picker Menu
             Menu {
@@ -162,7 +176,7 @@ struct CandidateReviewTable: View {
                 }
             }
             .menuStyle(.button)
-            .frame(width: 120)
+            .frame(width: 145)
 
             Button("Select All") {
                 state.selectedCandidateIDs.formUnion(CandidateReviewPlanner.selectAllIDs(from: candidates))

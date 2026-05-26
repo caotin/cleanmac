@@ -48,7 +48,7 @@ struct SmartScanView: View {
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.top, 20)
+            .padding(.top, 24)
 
             // Update Banner
             if let updateInfo = state.updateInfo {
@@ -95,7 +95,9 @@ struct SmartScanView: View {
                     
                     GlowingRunScanButton(title: buttonTitle, isScanning: state.isBusyWithCleanupScan) {
                         Task {
-                            if state.hasScanned && hasSafeItems {
+                            if state.lastCleanupSummary != nil {
+                                await state.scanAll()
+                            } else if state.hasScanned && hasSafeItems {
                                 await state.quickClean()
                             } else {
                                 await state.scanAll()
@@ -274,6 +276,8 @@ struct SmartScanView: View {
             return "Cleaning Your Mac..."
         } else if state.isBusyWithCleanupScan {
             return "Scanning Your Mac..."
+        } else if let _ = state.lastCleanupSummary {
+            return "Cleanup Complete"
         } else if state.hasScanned {
             return totalJunkBytes > 0 ? "Your Mac is ready for cleanup" : "Your Mac is clean and optimized"
         } else {
@@ -286,6 +290,13 @@ struct SmartScanView: View {
             return "Removing safe junk files and optimizing system resources."
         } else if state.isBusyWithCleanupScan {
             return "Analyzing system caches, log files, developer modules, and Docker containers."
+        } else if let summary = state.lastCleanupSummary {
+            let cleanedSize = CleanMacFormatting.bytes(summary.bytesRequested)
+            if summary.failedCount > 0 {
+                return "Successfully cleaned \(cleanedSize) from your Mac (\(summary.failedCount) items failed)."
+            } else {
+                return "Successfully cleaned \(cleanedSize) from your Mac. Everything is optimized!"
+            }
         } else if state.hasScanned {
             return totalJunkBytes > 0
                 ? "We've found junk files, optimized memory, and developer clutter\nthat you can safely remove."
@@ -300,6 +311,8 @@ struct SmartScanView: View {
             return "Cleaning..."
         } else if state.isBusyWithCleanupScan {
             return "Scanning..."
+        } else if state.lastCleanupSummary != nil {
+            return "Scan Again"
         } else if state.hasScanned && hasSafeItems {
             return "Smart Cleanup"
         } else {

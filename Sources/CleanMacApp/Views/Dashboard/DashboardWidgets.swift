@@ -185,7 +185,9 @@ struct RecommendationRow: View {
             Text(title)
                 .font(.system(size: 11))
                 .foregroundStyle(AppTheme.text)
-                .lineLimit(1)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
             
             Spacer()
             

@@ -56,7 +56,7 @@ struct DashboardView: View {
                     }
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 20)
+                .padding(.top, 24)
 
                 if let machine = state.machine {
                     // Top Row: System Health + At a Glance

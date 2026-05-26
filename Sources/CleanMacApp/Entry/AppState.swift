@@ -111,6 +111,7 @@ final class AppState: ObservableObject {
 
     func scanAll() async {
         guard !isBusyWithCleanupScan else { return }
+        lastCleanupSummary = nil
         statusMessage = "Scanning all cleanup sources..."
         await scanCleanupSources()
         await scanPracticalCleanup()
