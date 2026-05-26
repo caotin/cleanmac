@@ -101,7 +101,11 @@ cat <<EOF > "${APP_BUNDLE}/Contents/Info.plist"
 </plist>
 EOF
 
-# 8. Create DMG Disk Image
+# 8. Ad-hoc Codesign the App Bundle (crucial for Apple Silicon)
+echo "🔑 Ad-hoc codesigning app bundle..."
+codesign --force --deep --sign - "build/${APP_NAME}.app"
+
+# 9. Create DMG Disk Image
 echo "💿 Packaging app into installer DMG..."
 DMG_NAME="build/${APP_NAME}.dmg"
 TMP_DMG="build/${APP_NAME}_tmp.dmg"
