@@ -56,6 +56,8 @@ final class AppState: ObservableObject {
     @Published var isForceKillingApps = false
     @Published var lastCleanupSummary: CleanupRunSummary?
     @Published var dashboardCategoryFilter: CleanupCategory?
+    @Published var updateInfo: UpdateInfo?
+    @Published var isCheckingForUpdate = false
 
     private let settingsStore = SettingsStore()
     private let machineService = MachineInfoService()
@@ -67,6 +69,7 @@ final class AppState: ObservableObject {
     private let dockerPlanner = DockerCleanupPlanner()
     private lazy var executor = CleanupExecutor(dockerPlanner: dockerPlanner)
     private lazy var memoryOptimizer = MemoryOptimizer(machineInfo: machineService)
+    private let updateService = UpdateService()
     private var didStartBackgroundRefresh = false
     private var didScanCleanupSources = false
     private var didScanDockerInventory = false
@@ -80,6 +83,30 @@ final class AppState: ObservableObject {
         Task {
             await scanAll()
         }
+
+        Task {
+            await checkForUpdates()
+        }
+    }
+
+    func checkForUpdates() async {
+        guard !isCheckingForUpdate else { return }
+        isCheckingForUpdate = true
+        let info = await updateService.checkForUpdate()
+        updateInfo = info
+        isCheckingForUpdate = false
+
+        // Start periodic background check (every 24h)
+        updateService.startPeriodicCheck { [weak self] newInfo in
+            guard let self else { return }
+            await MainActor.run { [self] in
+                self.updateInfo = newInfo
+            }
+        }
+    }
+
+    func dismissUpdate() {
+        updateInfo = nil
     }
 
     func scanAll() async {

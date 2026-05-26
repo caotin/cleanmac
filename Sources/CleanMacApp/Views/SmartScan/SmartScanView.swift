@@ -1,3 +1,4 @@
+import AppKit
 import CleanMacCore
 import SwiftUI
 
@@ -48,6 +49,22 @@ struct SmartScanView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
+
+            // Update Banner
+            if let updateInfo = state.updateInfo {
+                UpdateBannerView(
+                    info: updateInfo,
+                    onUpdate: {
+                        NSWorkspace.shared.open(updateInfo.releasePageURL)
+                    },
+                    onDismiss: {
+                        state.dismissUpdate()
+                    }
+                )
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
 
             VStack(spacing: 0) {
                 Spacer(minLength: 16)

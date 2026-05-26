@@ -7,6 +7,7 @@ final class MenuBarManager: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var statusMenuItem: NSMenuItem?
     private var quickCleanMenuItem: NSMenuItem?
+    private var updateMenuItem: NSMenuItem?
 
     init(state: AppState) {
         self.state = state
@@ -53,7 +54,20 @@ final class MenuBarManager: NSObject, NSMenuDelegate {
         self.quickCleanMenuItem = quickCleanItem
         menu.addItem(quickCleanItem)
 
-        // 4. Open CleanMac item
+        // 4. Update Available item (hidden by default)
+        let updateItem = NSMenuItem(
+            title: "Update Available",
+            action: #selector(openUpdatePage),
+            keyEquivalent: ""
+        )
+        updateItem.target = self
+        updateItem.isHidden = true
+        self.updateMenuItem = updateItem
+        menu.addItem(updateItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        // 5. Open CleanMac item
         let openAppItem = NSMenuItem(
             title: "Open CleanMac",
             action: #selector(openMainApp),
@@ -95,6 +109,14 @@ final class MenuBarManager: NSObject, NSMenuDelegate {
         // Update the status description
         statusMenuItem?.title = "Status: \(state.statusMessage)"
 
+        // Show/hide update available menu item
+        if let info = state.updateInfo {
+            updateMenuItem?.title = "⬆︎ Update Available (v\(info.latestVersion))"
+            updateMenuItem?.isHidden = false
+        } else {
+            updateMenuItem?.isHidden = true
+        }
+
         // Enable or disable Quick Clean based on the application state
         if state.isRunningQuickClean {
             quickCleanMenuItem?.title = "Quick Clean (Running...)"
@@ -113,6 +135,12 @@ final class MenuBarManager: NSObject, NSMenuDelegate {
     @objc private func runQuickClean() {
         Task {
             await state.quickClean()
+        }
+    }
+
+    @objc private func openUpdatePage() {
+        if let url = state.updateInfo?.releasePageURL {
+            NSWorkspace.shared.open(url)
         }
     }
 
