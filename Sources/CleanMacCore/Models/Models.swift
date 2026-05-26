@@ -235,10 +235,7 @@ public struct CleanupSettings: Equatable, Codable, Sendable {
 
     public static func defaultSearchRoots(homeDirectory: String = FileManager.default.homeDirectoryForCurrentUser.path) -> [String] {
         [
-            "\(homeDirectory)/Desktop",
-            "\(homeDirectory)/Documents",
-            "\(homeDirectory)/Developer",
-            "\(homeDirectory)/Projects"
+            homeDirectory
         ]
     }
 
