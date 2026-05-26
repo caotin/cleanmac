@@ -124,6 +124,23 @@ Users can now download `CleanMac.dmg` from the GitHub Releases section and run i
 
 ---
 
+## Security & Gatekeeper Troubleshooting
+
+Because CleanMac is an open-source tool and is not codesigned/notarized using a paid Apple Developer Account, macOS **Gatekeeper** will automatically quarantine the downloaded application and display a warning saying:
+> **“CleanMac” is damaged and can’t be opened. You should move it to the Trash.**
+
+To allow CleanMac to run on your Mac, you can manually strip the quarantine attribute using the Terminal.
+
+### How to open CleanMac:
+1. Drag **CleanMac** from the DMG to your **Applications** folder.
+2. Open your **Terminal** app and run the following command:
+   ```bash
+   xattr -cr /Applications/CleanMac.app
+   ```
+3. Launch **CleanMac** from your Applications folder or Launchpad.
+
+---
+
 ## License
 
 This project is open-source and available under the MIT License.
