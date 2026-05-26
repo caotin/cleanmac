@@ -1,0 +1,50 @@
+name: CI/CD & Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        run: swift --version
+
+      - name: Run Tests
+        run: swift test
+
+  release:
+    name: Create Release
+    needs: test
+    runs-on: macos-14
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build DMG Package
+        run: |
+          # Extract version from tag (e.g., v1.2.3 -> 1.2.3)
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          chmod +x build_dmg.sh
+          VERSION="$TAG_VERSION" BUILD_NUMBER="$GITHUB_RUN_NUMBER" ./build_dmg.sh
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" build/CleanMac.dmg \
+            --title "CleanMac ${{ github.ref_name }}" \
+            --generate-notes \
+            --draft=false \
+            --prerelease=false

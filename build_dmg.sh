@@ -7,8 +7,8 @@ set -e
 
 APP_NAME="CleanMac"
 BUNDLE_IDENTIFIER="com.caotin.CleanMac"
-VERSION="1.0.0"
-BUILD_NUMBER="1"
+VERSION="${VERSION:-1.0.0}"
+BUILD_NUMBER="${BUILD_NUMBER:-1}"
 
 echo "=========================================="
 echo " Starting CleanMac Build & DMG Packaging"

@@ -79,48 +79,45 @@ Double-click `CleanMac.dmg`, and drag **CleanMac** into your **Applications** fo
 
 ## Releasing to GitHub
 
-To release the application so other users can download and use the `.dmg`, follow these steps:
+We use **GitHub Actions** to automate our build, test, and release pipeline. 
 
-### Step 1: Version and Tag the Release
+### Automated Release (Recommended)
 
-Create a semantic git tag for your release (replace `v1.0.0` with your target version) and push it to GitHub:
+To create and publish a new release, simply create a version tag and push it to GitHub. The CI/CD pipeline will automatically run unit tests, compile the application, package it into a compressed `.dmg` file, and create a GitHub Release with the installer attached.
 
+1. **Tag and Push**:
+   ```bash
+   # Tag the current commit (replace v1.0.0 with your version)
+   git tag -a v1.0.0 -m "Release version 1.0.0"
+
+   # Push the tag to your remote origin
+   git push origin v1.0.0
+   ```
+
+2. **Monitor Action**:
+   Navigate to the **Actions** tab in your GitHub repository to track the build and test progress.
+
+3. **Check Releases**:
+   Once the workflow run completes, a new release will be automatically published under **Releases** containing the compiled `CleanMac.dmg`.
+
+---
+
+### Manual Release (Alternative/Local)
+
+If you need to build and publish the release manually:
+
+#### 1. Package the DMG
+Run the packaging script with custom version variables:
 ```bash
-# Tag the current commit
-git tag -a v1.0.0 -m "Release version 1.0.0"
-
-# Push the tag to your origin remote
-git push origin v1.0.0
+VERSION="1.0.0" BUILD_NUMBER="1" ./build_dmg.sh
 ```
 
-### Step 2: Build the Production DMG
-
-Run the build script to generate the latest installer package:
-
-```bash
-./build_dmg.sh
-```
-
-### Step 3: Create the Release on GitHub
-
-You can publish the release either through the web browser or using the GitHub CLI:
-
-#### Option A: Via the GitHub Web UI
-1. Go to your repository on [GitHub](https://github.com).
-2. On the right-side panel, click on **Releases** -> **Draft a new release**.
-3. Choose the tag you just pushed (`v1.0.0`).
-4. Enter a release title (e.g., `CleanMac v1.0.0`).
-5. Write your release notes (e.g., highlighting new features and improvements).
-6. **Important**: Drag and drop the generated `build/CleanMac.dmg` into the *Attach binaries by dropping them here* box.
-7. Click **Publish release**.
-
-#### Option B: Via GitHub CLI (`gh`)
-If you have the `gh` command-line tool installed, run:
-
+#### 2. Publish using GitHub CLI
+Create the release and upload the asset using `gh`:
 ```bash
 gh release create v1.0.0 build/CleanMac.dmg \
   --title "CleanMac v1.0.0" \
-  --notes "Initial public release of CleanMac featuring dashboard diagnostics, Memory optimization, node_modules scanner, and Docker cleanups."
+  --notes "Release version 1.0.0 of CleanMac."
 ```
 
 Users can now download `CleanMac.dmg` from the GitHub Releases section and run it natively on their Macs!
