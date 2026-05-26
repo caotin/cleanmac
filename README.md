@@ -4,6 +4,8 @@ A native, lightweight, and modern macOS utility designed specifically for develo
 
 Built with **SwiftUI** and **AppKit** for high performance, native look-and-feel, and deep system integrations.
 
+![CleanMac App Screenshot](screenshot.png)
+
 ---
 
 ## Key Features
