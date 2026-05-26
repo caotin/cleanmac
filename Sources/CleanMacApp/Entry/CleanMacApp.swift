@@ -5,6 +5,8 @@ import SwiftUI
 enum CleanMacApp {
     @MainActor private static var state: AppState?
     @MainActor private static var window: NSWindow?
+    @MainActor private static var delegate: AppDelegate?
+    @MainActor private static var menuBarManager: MenuBarManager?
 
     @MainActor
     static func main() {
@@ -13,8 +15,15 @@ enum CleanMacApp {
         app.finishLaunching()
         AppIconInstaller.install()
 
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        self.delegate = delegate
+
         let state = AppState()
         self.state = state
+
+        let menuBarManager = MenuBarManager(state: state)
+        self.menuBarManager = menuBarManager
 
         installMenu(state: state)
 
@@ -48,6 +57,15 @@ enum CleanMacApp {
     }
 
     @MainActor
+    static func showWindow() {
+        if let window = window {
+            window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
+            NSApplication.shared.activate(ignoringOtherApps: true)
+        }
+    }
+
+    @MainActor
     private static func installMenu(state: AppState) {
         let handler = MenuHandler(state: state)
         MenuHandler.shared = handler
@@ -78,5 +96,16 @@ private final class MenuHandler: NSObject {
 
     @objc func openSettings() {
         state.section = .settings
+        CleanMacApp.showWindow()
+    }
+}
+
+@MainActor
+private final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            CleanMacApp.showWindow()
+        }
+        return true
     }
 }
