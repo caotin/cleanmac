@@ -6,7 +6,7 @@ struct NodeModulesTelemetryCard: View {
 
     var body: some View {
         GlassPanel(padding: 16) {
-            HStack(spacing: 24) {
+            HStack(spacing: 16) {
                 // Radial progress ring
                 ZStack {
                     Circle()
@@ -48,7 +48,7 @@ struct NodeModulesTelemetryCard: View {
                 Spacer()
                 
                 // 3 Columns of stats
-                HStack(spacing: 24) {
+                HStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Projects Scanned")
                             .font(.system(size: 10, weight: .semibold))
@@ -60,7 +60,7 @@ struct NodeModulesTelemetryCard: View {
                             .font(.system(size: 10))
                             .foregroundStyle(AppTheme.secondaryText)
                     }
-                    .frame(width: 90, alignment: .leading)
+                    .frame(width: 85, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Search Roots")
@@ -73,7 +73,7 @@ struct NodeModulesTelemetryCard: View {
                             .font(.system(size: 10))
                             .foregroundStyle(AppTheme.secondaryText)
                     }
-                    .frame(width: 75, alignment: .leading)
+                    .frame(width: 70, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Last Scan")
@@ -87,7 +87,7 @@ struct NodeModulesTelemetryCard: View {
                             .font(.system(size: 10))
                             .foregroundStyle(AppTheme.secondaryText)
                     }
-                    .frame(width: 90, alignment: .leading)
+                    .frame(width: 85, alignment: .leading)
                 }
             }
         }

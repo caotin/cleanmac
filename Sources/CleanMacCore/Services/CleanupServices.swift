@@ -288,35 +288,170 @@ public struct DockerCleanupPlanner: Sendable {
     public init() {}
 
     public func preview() -> [CleanupCandidate] {
-        [
+        let calendar = Calendar.current
+        let now = Date()
+        return [
             CleanupCandidate(
-                id: "docker.images",
+                id: "docker.image.openclaw",
                 category: .dockerImages,
-                title: "Dangling Docker images",
+                title: "openclaw:local",
+                path: "d756a8b3177c",
+                sizeBytes: 2_310_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -3, to: now),
                 risk: .medium,
-                detail: "Removes untagged images not referenced by containers.",
+                detail: "Image ID: d756a8b3177c. Created: 3 days ago. Status: Unused.",
+                commandPreview: "docker image rm d756a8b3177c"
+            ),
+            CleanupCandidate(
+                id: "docker.image.localstack",
+                category: .dockerImages,
+                title: "localstack/localstack-pro:latest",
+                path: "23299fa73b11",
+                sizeBytes: 1_280_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -7, to: now),
+                risk: .low,
+                detail: "Image ID: 23299fa73b11. Created: 1 week ago. Status: Unused.",
+                commandPreview: "docker image rm 23299fa73b11"
+            ),
+            CleanupCandidate(
+                id: "docker.image.selenoid",
+                category: .dockerImages,
+                title: "selenoid/vnc:chrome_112.0",
+                path: "cdbd82a63bfb",
+                sizeBytes: 1_190_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -5, to: now),
+                risk: .medium,
+                detail: "Image ID: cdbd82a63bfb. Created: 5 days ago. Status: Unused.",
+                commandPreview: "docker image rm cdbd82a63bfb"
+            ),
+            CleanupCandidate(
+                id: "docker.image.node22",
+                category: .dockerImages,
+                title: "node:22",
+                path: "f81607d210db",
+                sizeBytes: 1_130_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -14, to: now),
+                risk: .low,
+                detail: "Image ID: f81607d210db. Created: 2 weeks ago. Status: Unused.",
+                commandPreview: "docker image rm f81607d210db"
+            ),
+            CleanupCandidate(
+                id: "docker.image.node20",
+                category: .dockerImages,
+                title: "node:20",
+                path: "197941e0d0b6",
+                sizeBytes: 1_100_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -14, to: now),
+                risk: .low,
+                detail: "Image ID: 197941e0d0b6. Created: 2 weeks ago. Status: Unused.",
+                commandPreview: "docker image rm 197941e0d0b6"
+            ),
+            CleanupCandidate(
+                id: "docker.image.mongo",
+                category: .dockerImages,
+                title: "mongo:latest",
+                path: "4cccd8267062",
+                sizeBytes: 896_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -7, to: now),
+                risk: .medium,
+                detail: "Image ID: 4cccd8267062. Created: 1 week ago. Status: Unused.",
+                commandPreview: "docker image rm 4cccd8267062"
+            ),
+            CleanupCandidate(
+                id: "docker.image.mysql",
+                category: .dockerImages,
+                title: "mysql:8.0",
+                path: "eaf5cad44875",
+                sizeBytes: 781_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -6, to: now),
+                risk: .medium,
+                detail: "Image ID: eaf5cad44875. Created: 6 days ago. Status: Unused.",
+                commandPreview: "docker image rm eaf5cad44875"
+            ),
+            CleanupCandidate(
+                id: "docker.image.wordpress",
+                category: .dockerImages,
+                title: "wordpress:latest",
+                path: "e6c1f8a17f5f",
+                sizeBytes: 760_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -4, to: now),
+                risk: .medium,
+                detail: "Image ID: e6c1f8a17f5f. Created: 4 days ago. Status: Unused.",
+                commandPreview: "docker image rm e6c1f8a17f5f"
+            ),
+            CleanupCandidate(
+                id: "docker.image.others",
+                category: .dockerImages,
+                title: "Other unused images",
+                path: "multiple",
+                sizeBytes: 5_873_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -30, to: now),
+                risk: .low,
+                detail: "61 other unused docker images.",
                 commandPreview: "docker image prune"
             ),
             CleanupCandidate(
-                id: "docker.containers",
+                id: "docker.container.loving_heisenberg",
                 category: .dockerContainers,
-                title: "Stopped containers",
+                title: "loving_heisenberg",
+                path: "a1b2c3d4e5f6",
+                sizeBytes: 520_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -2, to: now),
                 risk: .low,
-                detail: "Removes stopped containers only.",
-                commandPreview: "docker container prune"
+                detail: "Image: redis:alpine. Status: Exited (0) 2 days ago.",
+                commandPreview: "docker container rm a1b2c3d4e5f6"
             ),
             CleanupCandidate(
-                id: "docker.volumes",
+                id: "docker.container.clever_hawking",
+                category: .dockerContainers,
+                title: "clever_hawking",
+                path: "b2c3d4e5f6a7",
+                sizeBytes: 504_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -4, to: now),
+                risk: .low,
+                detail: "Image: postgres:15. Status: Exited (1) 4 days ago.",
+                commandPreview: "docker container rm b2c3d4e5f6a7"
+            ),
+            CleanupCandidate(
+                id: "docker.container.jovial_bardeen",
+                category: .dockerContainers,
+                title: "jovial_bardeen",
+                path: "c3d4e5f6a7b8",
+                sizeBytes: 6_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -1, to: now),
+                risk: .low,
+                detail: "Image: nginx:alpine. Status: Running.",
+                commandPreview: "docker container rm jovial_bardeen"
+            ),
+            CleanupCandidate(
+                id: "docker.volume.pg_data_volume",
                 category: .dockerVolumes,
-                title: "Unused Docker volumes",
+                title: "pg_data_volume",
+                path: "pg_data_volume",
+                sizeBytes: 1_200_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -10, to: now),
                 risk: .high,
-                detail: "May remove local database and service data stored in unused volumes.",
+                detail: "Driver: local. Status: Dangling.",
+                commandPreview: "docker volume rm pg_data_volume"
+            ),
+            CleanupCandidate(
+                id: "docker.volume.others",
+                category: .dockerVolumes,
+                title: "Other unused volumes",
+                path: "multiple",
+                sizeBytes: 1_210_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -15, to: now),
+                risk: .high,
+                detail: "30 other dangling volumes.",
                 commandPreview: "docker volume prune"
             ),
             CleanupCandidate(
-                id: "docker.build-cache",
+                id: "docker.build-cache.kit",
                 category: .dockerBuildCache,
-                title: "Docker build cache",
+                title: "Docker BuildKit cache",
+                path: "build-cache",
+                sizeBytes: 730_000_000,
+                lastModified: calendar.date(byAdding: .day, value: -1, to: now),
                 risk: .medium,
                 detail: "Frees builder cache; future image builds may be slower.",
                 commandPreview: "docker builder prune"
@@ -358,7 +493,7 @@ public struct DockerInventoryScanner: Sendable {
         do {
             let info = try await shell.run("/usr/bin/env", ["docker", "info", "--format", "{{.ServerVersion}}"])
             guard info.status == 0 else {
-                return fallbackPlanner.preview()
+                return []
             }
 
             async let images = scanImages()
@@ -378,7 +513,7 @@ public struct DockerInventoryScanner: Sendable {
             )
             return candidates
         } catch {
-            return fallbackPlanner.preview()
+            return []
         }
     }
 

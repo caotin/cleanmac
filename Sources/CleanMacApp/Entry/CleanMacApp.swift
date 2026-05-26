@@ -31,6 +31,7 @@ enum CleanMacApp {
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.isReleasedWhenClosed = false
+        window.minSize = NSSize(width: 1180, height: 760)
         window.center()
         window.contentView = NSHostingView(rootView: rootView)
         window.makeKeyAndOrderFront(nil)

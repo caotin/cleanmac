@@ -32,10 +32,11 @@ final class AppState: ObservableObject {
     @Published var section: AppSection = .smartScan
     @Published var machine: MachineOverview?
     @Published var settings = CleanupSettings()
-    @Published var cleanupSourceCandidates: [CleanupCandidate] = AppState.mockCleanupSourceCandidates
-    @Published var practicalCandidates: [CleanupCandidate] = AppState.mockPracticalCandidates
-    @Published var nodeCandidates: [CleanupCandidate] = AppState.mockNodeCandidates
-    @Published var dockerCandidates: [CleanupCandidate] = AppState.mockDockerCandidates
+    @Published var cleanupSourceCandidates: [CleanupCandidate] = []
+    @Published var practicalCandidates: [CleanupCandidate] = []
+    @Published var nodeCandidates: [CleanupCandidate] = []
+    @Published var dockerCandidates: [CleanupCandidate] = []
+    @Published var hasScanned = false
     @Published var selectedCandidateIDs: Set<String> = []
     @Published var logs: [CleanupLogEntry] = []
     @Published var isRefreshingMachine = false
@@ -75,6 +76,10 @@ final class AppState: ObservableObject {
         await refreshMachine()
         refreshRunningApps()
         startBackgroundRefresh()
+        
+        Task {
+            await scanAll()
+        }
     }
 
     func scanAll() async {
@@ -84,6 +89,7 @@ final class AppState: ObservableObject {
         await scanPracticalCleanup()
         await scanNodeModules()
         await scanDockerInventory()
+        hasScanned = true
         statusMessage = "Found \(allCandidates.count) cleanup item(s)"
     }
 
@@ -284,7 +290,7 @@ final class AppState: ObservableObject {
     }
 
     var isScanned: Bool {
-        allCandidates.contains { !$0.id.hasPrefix("mock.") }
+        hasScanned
     }
 
     var isBusyWithCleanupScan: Bool {
@@ -316,134 +322,6 @@ final class AppState: ObservableObject {
         }
     }
 
-    private static var mockCleanupSourceCandidates: [CleanupCandidate] {
-        [
-            CleanupCandidate(
-                id: "mock.docker-logs",
-                category: .safeSystem,
-                title: "Old Docker Logs",
-                path: "~/Library/Containers/com.docker.docker/Data",
-                sizeBytes: UInt64(2.43 * 1024 * 1024 * 1024),
-                lastModified: Date(),
-                risk: .low,
-                detail: "Aggregated Docker runtime container logs."
-            ),
-            CleanupCandidate(
-                id: "mock.system-logs",
-                category: .safeSystem,
-                title: "System Logs",
-                path: "/private/var/log",
-                sizeBytes: 680 * 1024 * 1024,
-                lastModified: Date(),
-                risk: .low,
-                detail: "System messages and logging archives."
-            ),
-            CleanupCandidate(
-                id: "mock.browser-cache",
-                category: .devCaches,
-                title: "Browser Cache",
-                path: "~/Library/Caches/Google/Chrome",
-                sizeBytes: 523 * 1024 * 1024,
-                lastModified: Date(),
-                risk: .low,
-                detail: "Google Chrome local caching databases."
-            ),
-            CleanupCandidate(
-                id: "mock.safe-system-extra",
-                category: .safeSystem,
-                title: "Temporary System Files",
-                path: "/private/var/folders",
-                sizeBytes: UInt64(0.9 * 1024 * 1024 * 1024),
-                lastModified: Date(),
-                risk: .low,
-                detail: "Miscellaneous macOS temporary files."
-            )
-        ]
-    }
-
-    private static var mockPracticalCandidates: [CleanupCandidate] {
-        [
-            CleanupCandidate(
-                id: "mock.downloads-old",
-                category: .largeFiles,
-                title: "Downloads (Old Files)",
-                path: "~/Downloads",
-                sizeBytes: UInt64(1.21 * 1024 * 1024 * 1024),
-                lastModified: Calendar.current.date(byAdding: .day, value: -45, to: Date()),
-                risk: .high,
-                detail: "Large files in Downloads directory older than 30 days."
-            ),
-            CleanupCandidate(
-                id: "mock.large-archive",
-                category: .largeFiles,
-                title: "Old Backup Archive",
-                path: "~/Documents/Backup_2025.zip",
-                sizeBytes: UInt64(6.99 * 1024 * 1024 * 1024),
-                lastModified: Calendar.current.date(byAdding: .day, value: -90, to: Date()),
-                risk: .high,
-                detail: "Old system backup archive."
-            ),
-            CleanupCandidate(
-                id: "mock.trash-item",
-                category: .trashBins,
-                title: "Trash Bin",
-                path: "~/.Trash",
-                sizeBytes: UInt64(1.6 * 1024 * 1024 * 1024),
-                lastModified: Date(),
-                risk: .medium,
-                detail: "Items in Trash bin."
-            ),
-            CleanupCandidate(
-                id: "mock.apps-cache",
-                category: .applications,
-                title: "Unused Apps",
-                path: "/Applications/Xcode.app",
-                sizeBytes: UInt64(512 * 1024 * 1024),
-                lastModified: Calendar.current.date(byAdding: .day, value: -60, to: Date()),
-                risk: .high,
-                detail: "Cached app archives."
-            )
-        ]
-    }
-
-    private static var mockNodeCandidates: [CleanupCandidate] {
-        [
-            CleanupCandidate(
-                id: "mock.node-modules.research-solutions",
-                category: .nodeModules,
-                title: "Reseach-solutions",
-                path: "/Users/tinhuynh/Downloads/Reseach-solutions",
-                sizeBytes: 263_500_000,
-                lastModified: Date(),
-                risk: .low,
-                detail: "Project: /Users/tinhuynh/Downloads/Reseach-solutions"
-            ),
-            CleanupCandidate(
-                id: "mock.node-modules.c2-signaling-server",
-                category: .nodeModules,
-                title: "C2 Signaling Server",
-                path: "/Users/tinhuynh/Downloads/C2 Signaling Server",
-                sizeBytes: 197_000,
-                lastModified: Date(),
-                risk: .low,
-                detail: "Project: /Users/tinhuynh/Downloads/C2 Signaling Server"
-            ),
-            CleanupCandidate(
-                id: "mock.node-modules.c2-signaling-server-2",
-                category: .nodeModules,
-                title: "C2 Signaling Server 2",
-                path: "/Users/tinhuynh/Downloads/C2 Signaling Server 2",
-                sizeBytes: 0,
-                lastModified: Date(),
-                risk: .low,
-                detail: "Project: /Users/tinhuynh/Downloads/C2 Signaling Server 2"
-            )
-        ]
-    }
-
-    private static var mockDockerCandidates: [CleanupCandidate] {
-        DockerCleanupPlanner().preview()
-    }
 }
 
 struct CleanupRunSummary: Equatable {

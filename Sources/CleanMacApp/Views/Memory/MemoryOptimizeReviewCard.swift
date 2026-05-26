@@ -36,7 +36,7 @@ struct MemoryOptimizeReviewCard: View {
                 .background(Color.white.opacity(0.05))
                 .cornerRadius(6)
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.white.opacity(0.08), lineWidth: 1))
-                .frame(maxWidth: 240)
+                .frame(minWidth: 100, maxWidth: 240)
                 
                 Spacer()
                 
@@ -47,7 +47,7 @@ struct MemoryOptimizeReviewCard: View {
                     Button("High Risks") { selectedRisk = "High" }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("Risk: \(selectedRisk)")
+                        Text(selectedRisk)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 8))
                     }
@@ -66,7 +66,7 @@ struct MemoryOptimizeReviewCard: View {
                     Button("Applications") { selectedCategory = "Applications" }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("Category: \(selectedCategory)")
+                        Text(selectedCategory)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 8))
                     }

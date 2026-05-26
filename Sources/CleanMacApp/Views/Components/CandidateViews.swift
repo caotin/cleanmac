@@ -104,7 +104,7 @@ struct CandidateReviewTable: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.white.opacity(0.1), lineWidth: 1)
             }
-            .frame(minWidth: 200, maxWidth: .infinity)
+            .frame(minWidth: 100, maxWidth: .infinity)
 
             // Risk picker Menu
             Menu {
@@ -114,9 +114,10 @@ struct CandidateReviewTable: View {
                 }
             } label: {
                 HStack {
-                    Text(selectedRisk == nil ? "Risk: All Risks" : "Risk: \(selectedRisk!.rawValue)")
+                    Text(selectedRisk == nil ? "All Risks" : selectedRisk!.rawValue)
                         .font(.system(size: 11))
                         .foregroundStyle(AppTheme.text)
+                        .lineLimit(1)
                     Spacer()
                     Image(systemName: "chevron.down")
                         .font(.system(size: 8))
@@ -132,7 +133,7 @@ struct CandidateReviewTable: View {
                 }
             }
             .menuStyle(.button)
-            .frame(width: 130)
+            .frame(width: 90)
 
             // Category picker Menu
             Menu {
@@ -142,9 +143,10 @@ struct CandidateReviewTable: View {
                 }
             } label: {
                 HStack {
-                    Text(selectedCategory == nil ? "Category: All Categories" : "Category: \(selectedCategory!.rawValue)")
+                    Text(selectedCategory == nil ? "All Categories" : selectedCategory!.rawValue)
                         .font(.system(size: 11))
                         .foregroundStyle(AppTheme.text)
+                        .lineLimit(1)
                     Spacer()
                     Image(systemName: "chevron.down")
                         .font(.system(size: 8))
@@ -160,7 +162,7 @@ struct CandidateReviewTable: View {
                 }
             }
             .menuStyle(.button)
-            .frame(width: 170)
+            .frame(width: 120)
 
             Button("Select All") {
                 state.selectedCandidateIDs.formUnion(CandidateReviewPlanner.selectAllIDs(from: candidates))

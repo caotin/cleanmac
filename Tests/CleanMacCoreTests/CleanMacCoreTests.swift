@@ -6,9 +6,18 @@ final class CleanMacCoreTests: XCTestCase {
         let planner = DockerCleanupPlanner()
         let candidates = planner.preview()
 
-        XCTAssertEqual(candidates.map(\.category), [.dockerImages, .dockerContainers, .dockerVolumes, .dockerBuildCache])
+        let categories = Set(candidates.map(\.category))
+        XCTAssertTrue(categories.contains(.dockerImages))
+        XCTAssertTrue(categories.contains(.dockerContainers))
+        XCTAssertTrue(categories.contains(.dockerVolumes))
+        XCTAssertTrue(categories.contains(.dockerBuildCache))
+
         XCTAssertEqual(candidates.first(where: { $0.category == .dockerVolumes })?.risk, .high)
-        XCTAssertEqual(planner.command(for: candidates[0])?.preview, "/usr/bin/env docker image prune --force")
+
+        let imagesGroup = CleanupCandidate(id: "docker.images", category: .dockerImages, title: "Unused Images", risk: .medium, detail: "")
+        XCTAssertEqual(planner.command(for: imagesGroup)?.preview, "/usr/bin/env docker image prune --force")
+
+        XCTAssertEqual(planner.command(for: candidates[0])?.preview, "/usr/bin/env docker image rm d756a8b3177c")
     }
 
     func testSettingsStoreRoundTrip() async throws {
