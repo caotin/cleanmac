@@ -1,0 +1,16 @@
+# OS X
+.DS_Store
+
+# Xcode
+build/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Antigravity / CLI temporary files
+.antigravitycli/
