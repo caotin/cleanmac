@@ -94,6 +94,9 @@ public enum CleanupRisk: String, CaseIterable, Equatable, Sendable {
 public enum CleanupCategory: String, CaseIterable, Equatable, Sendable {
     case memory = "Memory"
     case devCaches = "Dev Caches"
+    case browserCaches = "Browser Caches"
+    case aiDevCaches = "AI Dev Caches"
+    case virtualizationCaches = "Virtualization Caches"
     case safeSystem = "Safe System"
     case nodeModules = "Node Modules"
     case dockerImages = "Docker Images"
@@ -126,6 +129,49 @@ public enum CleanupSource: String, CaseIterable, Codable, Equatable, Sendable {
     case cocoapods
     case carthage
     case composer
+    case bun
+    case corepack
+    case tnpm
+    case uv
+    case ruff
+    case mypy
+    case pytest
+    case jupyter
+    case huggingFace
+    case pytorch
+    case tensorflow
+    case wandb
+    case pyenv
+    case condaMetadata
+    case rustup
+    case ruby
+    case bundler
+    case cpan
+    case mise
+    case kubernetes
+    case awsCLI
+    case gcloud
+    case azureCLI
+    case typescript
+    case electron
+    case nodeGyp
+    case turbo
+    case vite
+    case webpack
+    case parcel
+    case eslint
+    case prettier
+    case android
+    case expo
+    case xcodeIBSupport
+    case playwright
+    case puppeteer
+    case codexCLI
+    case cursorAgentLogs
+    case lima
+    case utm
+    case vagrant
+    case browserCaches
 
     public var title: String {
         switch self {
@@ -148,6 +194,49 @@ public enum CleanupSource: String, CaseIterable, Codable, Equatable, Sendable {
         case .cocoapods: "CocoaPods Cache"
         case .carthage: "Carthage Cache"
         case .composer: "Composer Cache"
+        case .bun: "Bun Cache"
+        case .corepack: "Corepack Cache"
+        case .tnpm: "tnpm Cache"
+        case .uv: "uv Cache"
+        case .ruff: "Ruff Cache"
+        case .mypy: "MyPy Cache"
+        case .pytest: "Pytest Cache"
+        case .jupyter: "Jupyter Runtime"
+        case .huggingFace: "Hugging Face Cache"
+        case .pytorch: "PyTorch Cache"
+        case .tensorflow: "TensorFlow Cache"
+        case .wandb: "Weights & Biases Cache"
+        case .pyenv: "pyenv Cache"
+        case .condaMetadata: "Conda Metadata Cache"
+        case .rustup: "Rustup Downloads"
+        case .ruby: "Ruby Cache"
+        case .bundler: "Bundler Cache"
+        case .cpan: "CPAN Cache"
+        case .mise: "mise Cache"
+        case .kubernetes: "Kubernetes Cache"
+        case .awsCLI: "AWS CLI Cache"
+        case .gcloud: "Google Cloud Logs"
+        case .azureCLI: "Azure CLI Logs"
+        case .typescript: "TypeScript Cache"
+        case .electron: "Electron Cache"
+        case .nodeGyp: "node-gyp Cache"
+        case .turbo: "Turbo Cache"
+        case .vite: "Vite Cache"
+        case .webpack: "Webpack Cache"
+        case .parcel: "Parcel Cache"
+        case .eslint: "ESLint Cache"
+        case .prettier: "Prettier Cache"
+        case .android: "Android Cache"
+        case .expo: "Expo Cache"
+        case .xcodeIBSupport: "Xcode Interface Builder Cache"
+        case .playwright: "Playwright Cache"
+        case .puppeteer: "Puppeteer Cache"
+        case .codexCLI: "Codex CLI Runtime Cache"
+        case .cursorAgentLogs: "Cursor Agent Logs"
+        case .lima: "Lima Download Cache"
+        case .utm: "UTM Cache"
+        case .vagrant: "Vagrant Temp Files"
+        case .browserCaches: "Browser Caches"
         }
     }
 }
@@ -283,7 +372,74 @@ public struct CleanupSettings: Equatable, Codable, Sendable {
             "\(homeDirectory)/.m2/repository",
             "\(homeDirectory)/Library/Caches/CocoaPods",
             "\(homeDirectory)/Library/Caches/carthage",
-            "\(homeDirectory)/Library/Caches/composer"
+            "\(homeDirectory)/Library/Caches/composer",
+            "\(homeDirectory)/.bun/install/cache",
+            "\(homeDirectory)/.cache/node/corepack",
+            "\(homeDirectory)/.tnpm/_cacache",
+            "\(homeDirectory)/.tnpm/_logs",
+            "\(homeDirectory)/.cache/uv",
+            "\(homeDirectory)/.cache/ruff",
+            "\(homeDirectory)/.cache/mypy",
+            "\(homeDirectory)/.pytest_cache",
+            "\(homeDirectory)/.jupyter/runtime",
+            "\(homeDirectory)/.cache/huggingface",
+            "\(homeDirectory)/.cache/torch",
+            "\(homeDirectory)/.cache/tensorflow",
+            "\(homeDirectory)/.cache/wandb",
+            "\(homeDirectory)/.pyenv/cache",
+            "\(homeDirectory)/.conda/pkgs/cache",
+            "\(homeDirectory)/.rustup/downloads",
+            "\(homeDirectory)/.gem/specs",
+            "\(homeDirectory)/.bundle/cache",
+            "\(homeDirectory)/.cpan/build",
+            "\(homeDirectory)/.cpan/sources",
+            "\(homeDirectory)/Library/Caches/mise",
+            "\(homeDirectory)/.kube/cache",
+            "\(homeDirectory)/.aws/cli/cache",
+            "\(homeDirectory)/.config/gcloud/logs",
+            "\(homeDirectory)/.azure/logs",
+            "\(homeDirectory)/.cache/typescript",
+            "\(homeDirectory)/.cache/electron",
+            "\(homeDirectory)/.cache/node-gyp",
+            "\(homeDirectory)/.node-gyp",
+            "\(homeDirectory)/.turbo/cache",
+            "\(homeDirectory)/.vite/cache",
+            "\(homeDirectory)/.cache/vite",
+            "\(homeDirectory)/.cache/webpack",
+            "\(homeDirectory)/.parcel-cache",
+            "\(homeDirectory)/.cache/eslint",
+            "\(homeDirectory)/.cache/prettier",
+            "\(homeDirectory)/.android/build-cache",
+            "\(homeDirectory)/.android/cache",
+            "\(homeDirectory)/Library/Caches/Google/AndroidStudio",
+            "\(homeDirectory)/.expo/expo-go",
+            "\(homeDirectory)/.expo/android-apk-cache",
+            "\(homeDirectory)/.expo/ios-simulator-app-cache",
+            "\(homeDirectory)/.expo/native-modules-cache",
+            "\(homeDirectory)/.expo/schema-cache",
+            "\(homeDirectory)/.expo/template-cache",
+            "\(homeDirectory)/.expo/versions-cache",
+            "\(homeDirectory)/Library/Developer/Xcode/UserData/IB Support",
+            "\(homeDirectory)/Library/Caches/ms-playwright",
+            "\(homeDirectory)/.cache/puppeteer",
+            "\(homeDirectory)/.cache/codex",
+            "\(homeDirectory)/.codex/log",
+            "\(homeDirectory)/.cursor/agent/logs",
+            "\(homeDirectory)/Library/Application Support/Cursor/logs",
+            "\(homeDirectory)/Library/Caches/lima/download/by-url-sha256",
+            "\(homeDirectory)/Library/Caches/com.utmapp.UTM",
+            "\(homeDirectory)/Library/Containers/com.utmapp.UTM/Data/Library/Caches",
+            "\(homeDirectory)/.vagrant.d/tmp",
+            "\(homeDirectory)/Library/Caches/Google/Chrome",
+            "\(homeDirectory)/Library/Caches/Chromium",
+            "\(homeDirectory)/Library/Caches/com.microsoft.edgemac",
+            "\(homeDirectory)/Library/Caches/company.thebrowser.Browser",
+            "\(homeDirectory)/Library/Caches/BraveSoftware/Brave-Browser",
+            "\(homeDirectory)/Library/Caches/Firefox",
+            "\(homeDirectory)/Library/Caches/com.operasoftware.Opera",
+            "\(homeDirectory)/Library/Caches/com.vivaldi.Vivaldi",
+            "\(homeDirectory)/Library/Caches/com.kagi.kagimacOS",
+            "\(homeDirectory)/Library/Caches/zen"
         ]
     }
 

@@ -731,7 +731,7 @@ public struct CleanupExecutor: Sendable {
             switch candidate.category {
             case .nodeModules:
                 logs.append(removeNodeModules(candidate))
-            case .devCaches, .safeSystem:
+            case .devCaches, .browserCaches, .aiDevCaches, .virtualizationCaches, .safeSystem:
                 logs.append(removeSafePathCandidate(candidate))
             case .dockerImages, .dockerContainers, .dockerVolumes, .dockerBuildCache:
                 logs.append(await runDocker(candidate))

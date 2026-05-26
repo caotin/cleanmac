@@ -305,6 +305,12 @@ struct CandidateReviewRow: View {
                 return Color(red: 0.1, green: 0.5, blue: 1.0)
             case .nodeModules:
                 return Color(red: 0.65, green: 0.45, blue: 0.95)
+            case .browserCaches:
+                return AppTheme.cyan
+            case .aiDevCaches:
+                return Color(red: 0.55, green: 0.45, blue: 1.0)
+            case .virtualizationCaches:
+                return AppTheme.amber
             case .largeFiles:
                 return AppTheme.teal
             case .trashBins:
@@ -322,6 +328,12 @@ struct CandidateReviewRow: View {
                 return "cube.fill"
             case .nodeModules:
                 return "shippingbox.fill"
+            case .browserCaches:
+                return "globe"
+            case .aiDevCaches:
+                return "brain"
+            case .virtualizationCaches:
+                return "rectangle.3.group.fill"
             case .largeFiles:
                 return "folder.fill"
             case .trashBins:

@@ -127,6 +127,9 @@ struct DashboardStatTile: View {
 
 enum DashboardCleanupGroup: String, CaseIterable, Identifiable {
     case devCaches
+    case browserCaches
+    case aiDevCaches
+    case virtualizationCaches
     case safeSystem
     case nodeModules
     case docker
@@ -136,6 +139,9 @@ enum DashboardCleanupGroup: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .devCaches: "Dev Caches"
+        case .browserCaches: "Browser Caches"
+        case .aiDevCaches: "AI Dev Caches"
+        case .virtualizationCaches: "Virtualization"
         case .safeSystem: "Safe System"
         case .nodeModules: "Node Modules"
         case .docker: "Docker"
@@ -145,6 +151,9 @@ enum DashboardCleanupGroup: String, CaseIterable, Identifiable {
     var categories: Set<CleanupCategory> {
         switch self {
         case .devCaches: [.devCaches]
+        case .browserCaches: [.browserCaches]
+        case .aiDevCaches: [.aiDevCaches]
+        case .virtualizationCaches: [.virtualizationCaches]
         case .safeSystem: [.safeSystem]
         case .nodeModules: [.nodeModules]
         case .docker: [.dockerImages, .dockerContainers, .dockerVolumes, .dockerBuildCache]

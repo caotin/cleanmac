@@ -168,6 +168,9 @@ struct CompactReviewPanel: View {
         switch category {
         case .memory: "memorychip"
         case .devCaches: "curlybraces"
+        case .browserCaches: "globe"
+        case .aiDevCaches: "brain"
+        case .virtualizationCaches: "rectangle.3.group"
         case .safeSystem: "sparkles"
         case .nodeModules: "shippingbox"
         case .dockerImages, .dockerContainers, .dockerVolumes, .dockerBuildCache: "cube.box"

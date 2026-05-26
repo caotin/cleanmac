@@ -368,6 +368,45 @@ struct SettingsView: View {
                                 )
                             }
                         }
+
+                        // Cleanup Sources Panel
+                        GlassPanel(padding: 16) {
+                            VStack(alignment: .leading, spacing: 14) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Cleanup Sources")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundStyle(AppTheme.text)
+                                        Text("Choose which Smart Cleanup sources are scanned.")
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(AppTheme.secondaryText)
+                                    }
+                                    Spacer()
+                                    HStack(spacing: 8) {
+                                        Button("Enable All") {
+                                            state.settings.enabledSources = CleanupSource.allCases
+                                            Task { await state.saveSettings() }
+                                        }
+                                        .buttonStyle(.bordered)
+                                        .controlSize(.small)
+
+                                        Button("Disable All") {
+                                            state.settings.enabledSources = []
+                                            Task { await state.saveSettings() }
+                                        }
+                                        .buttonStyle(.bordered)
+                                        .controlSize(.small)
+                                    }
+                                }
+
+                                CleanupSourceGrid(
+                                    enabledSources: $state.settings.enabledSources,
+                                    onSave: {
+                                        Task { await state.saveSettings() }
+                                    }
+                                )
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .top)
                     
@@ -621,6 +660,55 @@ struct PathListEditor: View {
             }
             .padding(.top, 4)
         }
+    }
+}
+
+struct CleanupSourceGrid: View {
+    @Binding var enabledSources: [CleanupSource]
+    var onSave: () -> Void
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 160), spacing: 8)
+    ]
+
+    var body: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+            ForEach(CleanupSource.allCases, id: \.self) { source in
+                Button {
+                    toggle(source)
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: enabledSources.contains(source) ? "checkmark.square.fill" : "square")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(enabledSources.contains(source) ? AppTheme.cyan : AppTheme.secondaryText)
+                        Text(source.title)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(AppTheme.text)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Color.white.opacity(0.04))
+                    .cornerRadius(6)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func toggle(_ source: CleanupSource) {
+        if enabledSources.contains(source) {
+            enabledSources.removeAll { $0 == source }
+        } else {
+            enabledSources.append(source)
+        }
+        onSave()
     }
 }
 

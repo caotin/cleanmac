@@ -54,6 +54,21 @@ final class CleanMacCoreTests: XCTestCase {
         XCTAssertEqual(settings.enabledSources, CleanupSource.allCases)
     }
 
+    func testDefaultSettingsIncludeMoleCleanupSourcesAndSafeDeletionRoots() {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        let settings = CleanupSettings()
+        let roots = CleanupSettings.defaultSafeDeletionRoots(homeDirectory: home)
+
+        XCTAssertTrue(settings.enabledSources.contains(.bun))
+        XCTAssertTrue(settings.enabledSources.contains(.browserCaches))
+        XCTAssertTrue(settings.enabledSources.contains(.codexCLI))
+        XCTAssertTrue(settings.enabledSources.contains(.utm))
+        XCTAssertTrue(roots.contains("\(home)/.bun/install/cache"))
+        XCTAssertTrue(roots.contains("\(home)/Library/Caches/Google/Chrome"))
+        XCTAssertTrue(roots.contains("\(home)/Library/Caches/lima/download/by-url-sha256"))
+        XCTAssertTrue(roots.contains("\(home)/.cache/codex"))
+    }
+
     func testNodeModulesScannerFindsProjectFoldersAndSkipsIgnoredRoots() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let project = root.appendingPathComponent("app")
@@ -154,6 +169,69 @@ final class CleanMacCoreTests: XCTestCase {
         XCTAssertFalse(candidates.contains { $0.path?.contains("/Downloads/") == true })
     }
 
+    func testUnifiedScannerDetectsMoleInspiredCleanupSources() async throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let paths = [
+            ".bun/install/cache/install",
+            ".cache/node/corepack/v1",
+            ".cache/uv/wheels",
+            ".cache/ruff/content",
+            ".pytest_cache/v",
+            ".cache/huggingface/hub",
+            ".rustup/downloads/dist",
+            ".bundle/cache/gems",
+            ".cpan/build/module",
+            ".cache/typescript/compiler",
+            ".turbo/cache/build",
+            ".cache/vite/deps",
+            "Library/Caches/ms-playwright/chromium",
+            ".cache/codex/runtime",
+            ".cursor/agent/logs/session",
+            "Library/Caches/lima/download/by-url-sha256/blob",
+            "Library/Caches/com.utmapp.UTM/qemu",
+            "Library/Caches/Google/Chrome/Default"
+        ]
+
+        for path in paths {
+            let directory = home.appendingPathComponent(path)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try Data("fixture".utf8).write(to: directory.appendingPathComponent("payload"))
+        }
+
+        let scanner = UnifiedCleanupScanner(homeDirectory: home.path)
+        let candidates = await scanner.scan(settings: CleanupSettings())
+
+        XCTAssertTrue(candidates.contains { $0.title.contains("Bun Cache") && $0.category == .devCaches && $0.risk == .low })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Corepack Cache") && $0.category == .devCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("uv Cache") && $0.category == .devCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Hugging Face Cache") && $0.category == .aiDevCaches && $0.risk == .medium })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Rustup Downloads") && $0.category == .devCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Bundler Cache") && $0.category == .devCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Playwright Browser Cache") && $0.category == .devCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Codex CLI Cache") && $0.category == .aiDevCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Cursor Agent Logs") && $0.category == .aiDevCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Lima Download Cache") && $0.category == .virtualizationCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("UTM App Cache") && $0.category == .virtualizationCaches })
+        XCTAssertTrue(candidates.contains { $0.title.contains("Chrome Cache") && $0.category == .browserCaches })
+    }
+
+    func testUnifiedScannerSkipsIgnoredAndEmptyMoleSources() async throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let ignored = home.appendingPathComponent(".cache/uv/wheels")
+        let empty = home.appendingPathComponent(".cache/ruff")
+        try FileManager.default.createDirectory(at: ignored, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: empty, withIntermediateDirectories: true)
+        try Data("ignored".utf8).write(to: ignored.appendingPathComponent("payload"))
+
+        let scanner = UnifiedCleanupScanner(homeDirectory: home.path)
+        let candidates = await scanner.scan(settings: CleanupSettings(
+            ignoredPaths: [ignored.path],
+            enabledSources: [.uv, .ruff]
+        ))
+
+        XCTAssertTrue(candidates.isEmpty)
+    }
+
     func testUnifiedScannerRespectsDisabledSourcesAndIgnoreList() async throws {
         let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let npm = home.appendingPathComponent(".npm/_cacache")
@@ -239,6 +317,27 @@ final class CleanMacCoreTests: XCTestCase {
 
         XCTAssertEqual(logs.map(\.succeeded), [true, false])
         XCTAssertFalse(FileManager.default.fileExists(atPath: child.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: outside.path))
+    }
+
+    func testCleanupExecutorDeletesNewCacheCategoriesOnlyInsideAllowlist() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let allowedRoot = root.appendingPathComponent(".cache/codex")
+        let allowedChild = allowedRoot.appendingPathComponent("runtime")
+        let outside = root.appendingPathComponent("Documents/important")
+        try FileManager.default.createDirectory(at: allowedChild, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: outside, withIntermediateDirectories: true)
+        try Data("cache".utf8).write(to: allowedChild.appendingPathComponent("payload"))
+        try Data("important".utf8).write(to: outside.appendingPathComponent("payload"))
+
+        let executor = CleanupExecutor(allowedPathRoots: [allowedRoot.path])
+        let logs = await executor.execute([
+            CleanupCandidate(id: allowedChild.path, category: .aiDevCaches, title: "Allowed AI Cache", path: allowedChild.path, risk: .low, detail: ""),
+            CleanupCandidate(id: outside.path, category: .browserCaches, title: "Outside Browser Cache", path: outside.path, risk: .low, detail: "")
+        ], confirmed: true)
+
+        XCTAssertEqual(logs.map(\.succeeded), [true, false])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: allowedChild.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: outside.path))
     }
 

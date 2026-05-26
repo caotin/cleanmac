@@ -221,7 +221,13 @@ struct SmartScanView: View {
 
     private var cacheFilesSize: UInt64 {
         state.allCandidates
-            .filter { $0.category == .devCaches || $0.path?.localizedCaseInsensitiveContains("cache") == true }
+            .filter {
+                $0.category == .devCaches ||
+                $0.category == .browserCaches ||
+                $0.category == .aiDevCaches ||
+                $0.category == .virtualizationCaches ||
+                $0.path?.localizedCaseInsensitiveContains("cache") == true
+            }
             .reduce(0) { $0 + ($1.sizeBytes ?? 0) }
     }
 
@@ -234,6 +240,9 @@ struct SmartScanView: View {
     private var tempFilesSize: UInt64 {
         let cacheAndLogs = state.allCandidates.filter {
             $0.category == .devCaches ||
+            $0.category == .browserCaches ||
+            $0.category == .aiDevCaches ||
+            $0.category == .virtualizationCaches ||
             $0.path?.localizedCaseInsensitiveContains("cache") == true ||
             $0.path?.localizedCaseInsensitiveContains("log") == true
         }
