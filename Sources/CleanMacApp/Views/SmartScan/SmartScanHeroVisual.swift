@@ -144,7 +144,7 @@ struct SmartScanHeroVisual: View {
     }
 
     private var heroImage: NSImage? {
-        guard let url = Bundle.module.url(forResource: "SmartScanHero", withExtension: "png") else {
+        guard let url = Bundle.customModule.url(forResource: "SmartScanHero", withExtension: "png") else {
             return nil
         }
         return NSImage(contentsOf: url)

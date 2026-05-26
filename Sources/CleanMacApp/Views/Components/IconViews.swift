@@ -4,7 +4,7 @@ import SwiftUI
 enum AppIconInstaller {
     @MainActor
     static func install() {
-        guard let url = Bundle.module.url(forResource: "CleanMacAppIcon", withExtension: "png"),
+        guard let url = Bundle.customModule.url(forResource: "CleanMacAppIcon", withExtension: "png"),
               let image = NSImage(contentsOf: url) else {
             return
         }
@@ -31,7 +31,7 @@ struct ToolbarAssetIcon: View {
     }
 
     private var toolbarImage: NSImage? {
-        guard let url = Bundle.module.url(forResource: name, withExtension: "png", subdirectory: "ToolbarIcons") else {
+        guard let url = Bundle.customModule.url(forResource: name, withExtension: "png", subdirectory: "ToolbarIcons") else {
             return nil
         }
         return NSImage(contentsOf: url)
