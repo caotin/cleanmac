@@ -23,13 +23,18 @@ struct CleanupOverviewView: View {
                         HStack(spacing: 12) {
                             Button {
                                 Task {
-                                    await state.scanCleanupSources()
-                                    await state.scanPracticalCleanup()
+                                    await state.quickClean()
                                 }
                             } label: {
                                 HStack(spacing: 6) {
-                                    Image(systemName: "sparkles")
-                                    Text("Smart Cleanup")
+                                    if state.isRunningQuickClean {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                            .scaleEffect(0.7)
+                                    } else {
+                                        Image(systemName: "sparkles")
+                                    }
+                                    Text(state.isRunningQuickClean ? "Cleaning..." : "Smart Cleanup")
                                 }
                                 .font(.system(size: 12, weight: .bold))
                                 .padding(.horizontal, 16)
@@ -37,6 +42,7 @@ struct CleanupOverviewView: View {
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(Color(red: 0.1, green: 0.5, blue: 1.0))
+                            .disabled(state.isBusyWithCleanupScan)
                             
                             Button {
                                 state.cleanSelectedPreview()

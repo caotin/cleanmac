@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GlowingRunScanButton: View {
+    var title: String
     var isScanning: Bool
     var action: () -> Void
     @State private var pulse = false
@@ -69,11 +70,11 @@ struct GlowingRunScanButton: View {
                     .frame(width: 116, height: 116)
                 
                 if isScanning {
-                    Text("Scanning...")
+                    Text(title)
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(AppTheme.cyan)
                 } else {
-                    Text("Run Scan")
+                    Text(title)
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(.white)
                 }

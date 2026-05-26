@@ -54,12 +54,12 @@ struct SmartScanView: View {
                 
                 // Main Title
                 VStack(spacing: 6) {
-                    Text(state.isBusyWithCleanupScan ? "Scanning Your Mac..." : "Your Mac is ready for cleanup")
+                    Text(headerTitle)
                         .font(.system(size: 38, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                     
-                    Text("We've found junk files, optimized memory, and developer clutter\nthat you can safely remove.")
+                    Text(headerSubtitle)
                         .font(.system(size: 14))
                         .foregroundStyle(AppTheme.secondaryText)
                         .multilineTextAlignment(.center)
@@ -76,8 +76,14 @@ struct SmartScanView: View {
                     DotGridView()
                         .frame(width: 320, height: 180)
                     
-                    GlowingRunScanButton(isScanning: state.isBusyWithCleanupScan) {
-                        Task { await state.scanAll() }
+                    GlowingRunScanButton(title: buttonTitle, isScanning: state.isBusyWithCleanupScan) {
+                        Task {
+                            if state.hasScanned && hasSafeItems {
+                                await state.quickClean()
+                            } else {
+                                await state.scanAll()
+                            }
+                        }
                     }
                 }
                 .frame(height: 180)
@@ -235,6 +241,49 @@ struct SmartScanView: View {
         return state.allCandidates
             .filter { !cacheAndLogsIDs.contains($0.id) }
             .reduce(0) { $0 + ($1.sizeBytes ?? 0) }
+    }
+
+    private var headerTitle: String {
+        if state.isRunningQuickClean {
+            return "Cleaning Your Mac..."
+        } else if state.isBusyWithCleanupScan {
+            return "Scanning Your Mac..."
+        } else if state.hasScanned {
+            return totalJunkBytes > 0 ? "Your Mac is ready for cleanup" : "Your Mac is clean and optimized"
+        } else {
+            return "Start with a clean, safe scan"
+        }
+    }
+
+    private var headerSubtitle: String {
+        if state.isRunningQuickClean {
+            return "Removing safe junk files and optimizing system resources."
+        } else if state.isBusyWithCleanupScan {
+            return "Analyzing system caches, log files, developer modules, and Docker containers."
+        } else if state.hasScanned {
+            return totalJunkBytes > 0
+                ? "We've found junk files, optimized memory, and developer clutter\nthat you can safely remove."
+                : "No unnecessary files or active optimizations are needed at this time."
+        } else {
+            return "Cleanup, developer junk, memory, and app review in one compact dashboard."
+        }
+    }
+
+    private var buttonTitle: String {
+        if state.isRunningQuickClean {
+            return "Cleaning..."
+        } else if state.isBusyWithCleanupScan {
+            return "Scanning..."
+        } else if state.hasScanned && hasSafeItems {
+            return "Smart Cleanup"
+        } else {
+            return "Run Scan"
+        }
+    }
+
+    private var hasSafeItems: Bool {
+        let safe = CleanupSelectionPlanner.quickCleanCandidates(from: state.allCandidates)
+        return !safe.isEmpty
     }
 }
 
